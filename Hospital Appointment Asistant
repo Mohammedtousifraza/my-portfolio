@@ -1,0 +1,329 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Mohammedtousifraza/my-portfolio/blob/main/Hospital%20Appointment%20Asistant\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Context Engineering – Hospital Appointment Asistant\n",
+        "\n",
+        "## Objective\n",
+        "In this lab, we will learn how to:\n",
+        "- Structure context instead of dumping prompts\n",
+        "- Separate static, dynamic, and memory context\n",
+        "- Build a real-world, AI system\n",
+        "\n",
+        "### Use Case\n",
+        "Customer Support AI for an EdTech platform\n",
+        "\n",
+        "> Key idea: **Context is infrastructure, not text.**\n"
+      ],
+      "metadata": {
+        "id": "1OsU6TcDf9Uz"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [],
+      "metadata": {
+        "id": "uhgaLSaI1SaE"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Context Engineering Approach\n",
+        "\n",
+        "We break context into structured parts:\n",
+        "\n",
+        "1. Static Context → Who the AI is and how it behaves\n",
+        "2. External Context → Policies or documents\n",
+        "3. Dynamic Context → User input and task data\n",
+        "4. Memory Context → What the system remembers\n",
+        "\n",
+        "We assemble these intentionally."
+      ],
+      "metadata": {
+        "id": "t0NSCreYgN_L"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## Your Task\n",
+        "\n",
+        "1. Choose a real-world domain\n",
+        "2. Define:\n",
+        "   - Static context\n",
+        "   - Dynamic context\n",
+        "   - Memory context\n",
+        "3. Assemble context in code\n",
+        "4. Show one real workflow\n",
+        "5. Explain how this scales to your capstone\n",
+        "\n",
+        "No generic chatbots allowed."
+      ],
+      "metadata": {
+        "id": "_18L5CG2iX5U"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Step 1: Static Context\n",
+        "Static context defines:\n",
+        "\n",
+        "The role of the AI\n",
+        "Rules and constraints\n",
+        "Tone and behavior\n",
+        "This rarely changes. **bold text**"
+      ],
+      "metadata": {
+        "id": "aNRDsVysyrqP"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "SYSTEM_CONTEXT = \"\"\"\n",
+        "You are a Hospital Appointment Assistant.\n",
+        "\n",
+        "Rules:\n",
+        "- Be polite and professional\n",
+        "- Help patients book, reschedule, or cancel appointments\n",
+        "- Use only the information provided in the context\n",
+        "- Do not invent doctors or available time slots\n",
+        "- Ask for missing information when required\n",
+        "- Do not provide medical diagnosis or treatment advice\n",
+        "\"\"\""
+      ],
+      "metadata": {
+        "id": "IWUWhIJ49mVo"
+      },
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Step 2: External Context (Policies)\n",
+        "The AI should not guess policies. We explicitly provide them as context."
+      ],
+      "metadata": {
+        "id": "gmbUp2npyhqf"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "HOSPITAL_POLICY = \"\"\"\n",
+        "Hospital Policy:\n",
+        "- Appointments are available during hospital working hours\n",
+        "- Patients must provide required appointment details\n",
+        "- Cancellation is allowed up to 2 hours before the appointment\n",
+        "- Rescheduling depends on slot availability\n",
+        "- Emergency cases should be directed to the emergency department\n",
+        "\"\"\""
+      ],
+      "metadata": {
+        "id": "0RCq0_VI-HPM"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Step 3: Dynamic Context\n",
+        "Dynamic context changes per request. This includes user input and user-specific data."
+      ],
+      "metadata": {
+        "id": "717Ggu4Dy3_K"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "SESSION_MEMORY = \"\"\"\n",
+        "Patient Name: Mohammed\n",
+        "Previous Department: General Medicine\n",
+        "Preferred Time: Morning\n",
+        "Previous Visit: August 2026\n",
+        "\"\"\""
+      ],
+      "metadata": {
+        "id": "bbfgF59g-KKi"
+      },
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "APPOINTMENT_DATA = \"\"\"\n",
+        "Department: Cardiology\n",
+        "Doctor: Dr. Anil Kumar\n",
+        "Date: 15 September 2026\n",
+        "Available Slots: 10:00 AM, 11:30 AM, 2:00 PM\n",
+        "\"\"\"\n"
+      ],
+      "metadata": {
+        "id": "jIBFu3x7-NQw"
+      },
+      "execution_count": 5,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "user_query = \"I want to book an appointment with a cardiologist tomorrow morning\""
+      ],
+      "metadata": {
+        "id": "3x-vnxvA-R92"
+      },
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Step 4: Context Assembly\n",
+        "We now assemble the context carefully. Order and clarity matter. This is context engineering."
+      ],
+      "metadata": {
+        "id": "jkb2KK0ry-JA"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "final_prompt_with_memory = f\"\"\"\n",
+        "{SYSTEM_CONTEXT}\n",
+        "\n",
+        "Session Memory:\n",
+        "{SESSION_MEMORY}\n",
+        "\n",
+        "Hospital Policy:\n",
+        "{HOSPITAL_POLICY}\n",
+        "\n",
+        "Appointment Information:\n",
+        "{APPOINTMENT_DATA}\n",
+        "\n",
+        "User Question:\n",
+        "{user_query}\n",
+        "\"\"\""
+      ],
+      "metadata": {
+        "id": "D-A57dOu-VwM"
+      },
+      "execution_count": 7,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "eznRTNP9yD6J"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import userdata\n",
+        "\n",
+        "# Access the API key stored in Colab Secrets\n",
+        "MY_API_KEY = userdata.get('api_key')\n",
+        "\n",
+        "\n",
+        "print(\"API key loaded successfully from Colab Secrets.\")\n",
+        "print(\"Please update the client initialization in the cell above (hok-nnOpgi2r) to use `api_key=MY_API_KEY`.\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "vNbReoXMyDn3",
+        "outputId": "a1158b9a-9c87-40f5-a4b9-839139afd6e7"
+      },
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "API key loaded successfully from Colab Secrets.\n",
+            "Please update the client initialization in the cell above (hok-nnOpgi2r) to use `api_key=MY_API_KEY`.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from openai import OpenAI\n",
+        "\n",
+        "client = OpenAI(api_key=MY_API_KEY, base_url=\"https://nexusapi.navigatelabs.ai\")\n",
+        "\n",
+        "response = client.chat.completions.create(\n",
+        "    model=\"gemini-2.5-flash\",\n",
+        "    messages=[\n",
+        "        {\"role\": \"system\", \"content\": SYSTEM_CONTEXT},\n",
+        "        {\"role\": \"user\", \"content\": final_prompt_with_memory}\n",
+        "    ]\n",
+        ")\n",
+        "\n",
+        "print(response.choices[0].message.content)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Op4H_oY0xmZB",
+        "outputId": "05812b6a-0419-4d18-ac03-5e573fc2086e"
+      },
+      "execution_count": 12,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Hello Mohammed,\n",
+            "\n",
+            "I can help you book an appointment with a cardiologist for tomorrow, September 15, 2026.\n",
+            "\n",
+            "Dr. Anil Kumar is available in the Cardiology Department with the following morning slots:\n",
+            "*   10:00 AM\n",
+            "*   11:30 AM\n",
+            "\n",
+            "Please let me know which of these times works best for you.\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
